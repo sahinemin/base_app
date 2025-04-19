@@ -1,13 +1,13 @@
 import 'package:base_app/config/router/base_route.dart';
+import 'package:base_app/core/presentation/pages/base_page_with_bottom_bar.dart';
+import 'package:base_app/core/presentation/splash/presentation/pages/splash_page.dart';
 import 'package:base_app/features/home/presentation/pages/home_page.dart';
 import 'package:base_app/features/settings/presentation/pages/settings_page.dart';
-import 'package:base_app/features/shared/pages/base_page_with_bottom_bar.dart';
-import 'package:base_app/features/splash/presentation/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-part 'routes.g.dart';
 part 'route_definitions.dart';
+part 'routes.g.dart';
 
 @TypedGoRoute<SplashRoute>(
   path: RouteDefinitions._splashPath,

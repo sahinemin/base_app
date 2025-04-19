@@ -1,11 +1,12 @@
-import 'package:base_app/config/router/routes.dart';
+import 'package:base_app/core/error/failures.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 final class ErrorPage extends StatefulWidget {
-  const ErrorPage({super.key, this.error});
+  const ErrorPage({super.key, this.failure, this.onRetry});
 
-  final Exception? error;
+  final Failure? failure;
+  final VoidCallback? onRetry;
 
   @override
   State<ErrorPage> createState() => _ErrorPageState();
@@ -86,7 +87,7 @@ final class _ErrorPageState extends State<ErrorPage>
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Text(
-                    widget.error?.toString() ?? 'Page not found',
+                    widget.failure?.toString() ?? 'Page not found',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
@@ -100,11 +101,9 @@ final class _ErrorPageState extends State<ErrorPage>
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      const HomeRoute().go(context);
-                    },
-                    icon: const Icon(Icons.home),
-                    label: const Text('Go Home'),
+                    onPressed: widget.onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,

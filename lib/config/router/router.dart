@@ -1,6 +1,6 @@
 import 'package:base_app/config/router/custom_transition_page_builder.dart';
 import 'package:base_app/config/router/routes.dart';
-import 'package:base_app/features/error/presentation/pages/error_page.dart';
+import 'package:base_app/core/presentation/pages/error_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
