@@ -33,7 +33,7 @@ dev_dependencies:
 
   go_router_builder: ^2.8.1
   injectable_generator: ^2.7.0
-  json_serializable: ^6.9.4
+  json_serializable: ^6.9.5
   mocktail: ^1.0.4
   very_good_analysis: ^7.0.0
 
