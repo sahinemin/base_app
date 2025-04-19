@@ -1,0 +1,461 @@
+# Clean Architecture Rules for Flutter Projects
+
+# Data Layer
+- Models must implement `fromJson` and `toJson` methods.
+- Repositories must handle all exceptions and convert them to domain failures.
+
+Example for models:
+part 'room_json_model.g.dart';
+```dart
+@JsonSerializable()
+final class RoomJsonModel extends Room {
+  const RoomJsonModel({
+    super.id = '',
+    super.name = '',
+    super.temperature = 0,
+    super.humidity = 0,
+  });
+
+  factory RoomJsonModel.fromJson(Map<String, dynamic> json) =>
+      _$RoomJsonModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RoomJsonModelToJson(this);
+}
+```
+
+# Domain Layer
+- Must not have dependencies on external packages (except utilities like `fpdart`).
+- Use `TaskEither` for error handling.
+- All entities should be immutable (`freezed`).
+
+# Repository Rules (Domain Layer)
+- Must be abstract classes (interfaces).
+- Methods should return `TaskEither<Failure, Success>`.
+- Should define all data operations for the feature.
+- Must not expose implementation details.
+
+Example for repositories:
+```dart
+abstract class RoomRepository {
+  TaskEither<SensorFailure, Stream<List<Room>>> getRoomsStream(String uid);
+  TaskEither<SensorFailure, Unit> updateRoom(Room room);
+  TaskEither<SensorFailure, Room> getRoom(String id);
+  TaskEither<SensorFailure, Unit> deleteRoom(String id);
+}
+```
+
+Example for entities:
+part 'room.freezed.dart';
+```dart
+@freezed
+class Room with _$Room {
+  const Room({
+    required this.id,
+    required this.name,
+    required this.temperature,
+    required this.humidity,
+  });
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final double temperature;
+  @override
+  final double humidity;
+  
+  RoomJsonModel toJsonModel() => RoomJsonModel(
+        id: id,
+        name: name,
+        temperature: temperature,
+        humidity: humidity,
+      );
+}
+```
+
+# UseCase Rules
+- Must be a single public method named `call`.
+- Should represent a single business operation.
+- Must use `TaskEither` for error handling.
+- Should be injectable for dependency injection.
+
+Example for usecases:
+```dart
+@injectable
+class GetRoomsStream {
+  const GetRoomsStream(this._repository);
+
+  final RoomRepository _repository;
+
+  TaskEither<SensorFailure, Stream<List<Room>>> call(String uid) {
+    return _repository.getRoomsStream(uid);
+  }
+}
+```
+
+# Root Directory Structure
+```
+lib/
+├── app/
+├── core/
+├── config/
+├── shared/
+├── features/
+```
+
+Core Rules:
+- Each feature must be self-contained.
+- No direct dependencies between features.
+- Core modules should only contain shared infrastructure code.
+- Shared modules should only contain common domain entities and utilities.
+
+# Feature Structure
+```
+features/
+└── feature_name/
+    ├── data/
+    │   ├── datasources/
+    │   ├── models/
+    │   └── repositories/
+    ├── domain/
+    │   ├── entities/
+    │   └── usecases/
+    |   |__ repositories/
+    ├── presentation/
+    │   ├── bloc/
+    │   ├── pages/
+    │   └── widgets/
+```
+
+# Bloc Rules
+- Use `Bloc` pattern for state management.
+- Events and states must be sealed classes.
+
+Example for events:
+```dart
+part of 'feature_bloc.dart';
+
+sealed class FeatureEvent {
+  const FeatureEvent();
+}
+
+final class FeatureStarted extends FeatureEvent {
+  const FeatureStarted();
+}
+
+final class FeatureUpdated extends FeatureEvent {
+  const FeatureUpdated(this.data);
+  
+  final SomeData data;
+}
+
+final class FeatureErrored extends FeatureEvent {
+  const FeatureErrored(this.failure);
+  
+  final Failure failure;
+}
+```
+
+Example for states:
+```dart
+part of 'feature_bloc.dart';
+
+sealed class FeatureState extends Equatable {
+  const FeatureState();
+  
+  @override
+  List<Object?> get props => [];
+}
+
+final class FeatureInitial extends FeatureState {
+  const FeatureInitial();
+}
+
+final class FeatureLoading extends FeatureState {
+  const FeatureLoading();
+}
+
+final class FeatureSuccess extends FeatureState {
+  const FeatureSuccess(this.data);
+  
+  final SomeData data;
+  
+  @override
+  List<Object?> get props => [data];
+}
+
+final class FeatureFailure extends FeatureState {
+  const FeatureFailure(this.failure);
+  
+  final Failure failure;
+  
+  @override
+  List<Object?> get props => [failure];
+}
+```
+
+# SOLID Principles Implementation
+
+## Single Responsibility
+- Each class should have only one reason to change.
+
+## Open/Closed
+- Use abstract classes for repositories and data sources.
+- Implement interfaces for all external dependencies.
+
+## Interface Segregation
+- Keep interfaces small and focused.
+- Split large interfaces into smaller ones.
+
+## Dependency Inversion
+- Always depend on abstractions.
+- Use dependency injection.
+
+# KISS Principles Implementation
+
+-  a design principle stating that designs and/or systems should be as simple as possible in order to maximize user acceptance and interaction.
+
+# DRY Principles Implementation
+
+- a software development principle which stands for 'don't repeat yourself,' that aims to reduce code duplication in favor of abstractions and avoiding redundancy.
+
+# Package Usage Rules
+- Use `freezed` for entities.
+- Use `injectable` for dependency injection.
+- Use `json_serializable` for json models.
+
+Required packages:
+```yaml
+dependencies:
+  equatable: ^2.0.7
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.0
+  flutter_localizations:
+    sdk: flutter
+  fpdart: ^1.1.1
+  freezed_annotation: ^3.0.0
+  get_it: ^8.0.3
+  injectable: ^2.5.0
+  intl: ^0.19.0
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  bloc_test: ^10.0.0
+  build_runner: ^2.4.15
+  flutter_test:
+    sdk: flutter
+  freezed: ^3.0.3
+  injectable_generator: ^2.7.0
+  json_serializable: ^6.9.4
+  mocktail: ^1.0.4
+  very_good_analysis: ^7.0.0
+```
+
+# Error Handling Rules
+- Use `TaskEither` type for all operations that can fail.
+- Define specific failure classes for each feature.
+- Handle all external exceptions in the data layer.
+
+Example pattern:
+```dart
+TaskEither<Failure, Success> operation() {
+  return TaskEither.tryCatch(
+    () async => await repository.operation(),
+    (error, stackTrace) => mapToFailure(error),
+  );
+}
+}
+```
+
+
+# Go Router Architecture Rules
+
+# 1. Base Structure
+## Router Configuration
+- Create a centralized router configuration using `GoRouter` with typed routes.
+
+Example:
+```dart
+@singleton
+class AppRouter {
+  const AppRouter();
+
+  GoRouter get router => GoRouter(
+        initialLocation: RouteLocation.initialPath,
+        routes: $appRoutes, // Generated routes
+      );
+
+}
+```
+
+## Route Locations
+- Define route paths as an enum for type safety and centralization.
+
+Example:
+```dart
+enum RouteLocation {
+  signUp('/sign-up'),
+  signIn('/sign-in'),
+  home('/');
+
+  const RouteLocation(this._path);
+
+  final String _path;
+  String get path => _path;
+}
+```
+
+# 2. Route Definition Rules
+
+## Base Route Class
+- Create a base route class for common functionality.
+
+Example:
+```dart
+abstract class BaseRoute extends GoRouteData {
+  const BaseRoute();
+
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return CustomTransitionPage<void>(
+      child: build(context, state),
+      // Common transition settings
+    );
+  }
+}
+```
+
+## Route Declarations
+- Define routes using annotations for code generation.
+
+Example:
+```dart
+@TypedGoRoute<HomeRoute>(path: RouteLocation.home.path)
+class HomeRoute extends BaseRoute {
+  const HomeRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const HomePage();
+}
+```
+
+# 3. Navigation Rules
+
+## Type-Safe Navigation
+- Use generated route classes for navigation.
+
+Example:
+```dart
+// Preferred
+const HomeRoute().go(context);
+
+// Alternative
+context.go(RouteLocation.homePath);
+```
+
+
+# 4. Route Organization Rules
+
+## File Structure
+```
+lib/core/routing/
+├── app_router.dart
+├── base_route.dart
+├── route_location.dart
+└── routes/
+    └── app_routes.dart
+```
+
+## Route Groups
+- Auth routes (public)
+- Protected routes (require authentication)
+- Feature routes (nested routes)
+
+# 5. Code Generation Rules
+
+## Part Files
+- Use part files for route declarations.
+
+Example:
+```dart
+part 'app_router.g.dart';
+part 'routes/app_routes.dart';
+```
+
+## Build Configuration
+- Use `go_router_builder` for route generation.
+
+Example:
+```yaml
+dependencies:
+  go_router: ^{version}
+  go_router_builder: ^{version}
+
+targets:
+  $default:
+    builders:
+      go_router_builder:
+        options:
+          output_dir: lib/core/routing/generated
+```
+
+
+# 7. Deep Linking Rules
+
+## Path Parameters
+Example:
+```dart
+@TypedGoRoute<DetailRoute>(path: '/detail/:id')
+class DetailRoute extends BaseRoute {
+  const DetailRoute({required this.id});
+
+  final String id;
+}
+```
+
+## Query Parameters
+Example:
+```dart
+@TypedGoRoute<SearchRoute>(path: '/search')
+class SearchRoute extends BaseRoute {
+  const SearchRoute({this.query});
+
+  final String? query;
+}
+```
+
+# 8. Transition Rules
+- Define consistent transitions in `BaseRoute`.
+
+Example:
+```dart
+Page<void> buildPage(BuildContext context, GoRouterState state) {
+  return CustomTransitionPage<void>(
+    child: build(context, state),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Transition logic
+      return SlideTransition(
+        position: animation.drive(Tween<Offset>(
+          begin: Offset.zero,
+          end: Offset(0, -0.25),
+        )),
+        child: child,
+      );
+    },
+  );
+}
+```
+
+Use final for classes and const for contructors whenever possible.
+
+
+
+These rules ensure:
+- Type-safe navigation
+- Consistent routing patterns
+- Clean architecture compliance
+- Testable navigation logic
+- Maintainable route definitions
+- Proper error handling
+- Deep linking support
