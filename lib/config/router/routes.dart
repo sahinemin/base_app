@@ -3,6 +3,8 @@ import 'package:base_app/core/presentation/pages/base_page_with_bottom_bar.dart'
 import 'package:base_app/core/presentation/splash/presentation/pages/splash_page.dart';
 import 'package:base_app/features/home/presentation/pages/home_page.dart';
 import 'package:base_app/features/settings/presentation/pages/settings_page.dart';
+import 'package:base_app/features/todo/presentation/pages/todo_detail_page.dart';
+import 'package:base_app/features/todo/presentation/pages/todo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,6 +39,20 @@ final class SplashRoute extends BaseRoute {
         ),
       ],
     ),
+    TypedStatefulShellBranch<TodoBranch>(
+      routes: <TypedRoute<RouteData>>[
+        TypedGoRoute<TodoRoute>(
+          path: RouteDefinitions._todoPath,
+          name: RouteDefinitions._todoName,
+          routes: <TypedRoute<RouteData>>[
+            TypedGoRoute<TodoDetailRoute>(
+              path: RouteDefinitions._todoDetailPath,
+              name: RouteDefinitions._todoDetailName,
+            ),
+          ],
+        ),
+      ],
+    ),
   ],
 )
 final class CustomShellRoute extends StatefulShellRouteData {
@@ -59,10 +75,28 @@ final class SettingsBranch extends StatefulShellBranchData {
   const SettingsBranch();
 }
 
+final class TodoBranch extends StatefulShellBranchData {
+  const TodoBranch();
+}
+
 final class HomeRoute extends GoRouteData {
   const HomeRoute();
   @override
   Widget build(BuildContext context, GoRouterState state) => const HomePage();
+}
+
+final class TodoRoute extends GoRouteData {
+  const TodoRoute();
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const TodoPage();
+}
+
+final class TodoDetailRoute extends GoRouteData {
+  const TodoDetailRoute({required this.todoId});
+  final int todoId;
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      TodoDetailPage(todoId: todoId);
 }
 
 final class SettingsRoute extends GoRouteData {

@@ -1,8 +1,12 @@
-import 'package:base_app/core/di/injection.config.dart';
+import 'package:base_app/core/di/injection.config.dart'; // Generated file
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
 final getIt = GetIt.instance;
 
-@InjectableInit()
-void configureDependencies() => getIt.init();
+@InjectableInit(
+  initializerName: r'$initGetIt', // default
+  preferRelativeImports: false, // default
+  asExtension: false, // default
+)
+Future<void> configureDependencies() async => $initGetIt(getIt);

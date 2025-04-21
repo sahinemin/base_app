@@ -19,9 +19,8 @@ abstract class Failure extends Equatable {
 
 /// Represents a failure occurring during server interactions (e.g., API calls).
 class ServerFailure extends Failure {
-  final String? detailMessage;
-
   const ServerFailure({this.detailMessage});
+  final String? detailMessage;
 
   @override
   String get message =>
@@ -31,11 +30,11 @@ class ServerFailure extends Failure {
   List<Object?> get props => [detailMessage];
 }
 
-/// Represents a failure occurring during local cache operations (e.g., SharedPreferences, Hive).
+/// Represents a failure occurring during local
+/// cache operations (e.g., SharedPreferences, Hive).
 class CacheFailure extends Failure {
-  final String? detailMessage;
-
   const CacheFailure({this.detailMessage});
+  final String? detailMessage;
 
   @override
   String get message => detailMessage ?? 'A cache error occurred.';
@@ -46,9 +45,8 @@ class CacheFailure extends Failure {
 
 /// Represents a failure due to network connectivity issues.
 class NetworkFailure extends Failure {
-  final String? detailMessage;
-
   const NetworkFailure({this.detailMessage});
+  final String? detailMessage;
 
   @override
   String get message =>
@@ -61,10 +59,9 @@ class NetworkFailure extends Failure {
 
 /// Represents a failure due to invalid input data.
 class ValidationFailure extends Failure {
+  const ValidationFailure({required this.field, this.detailMessage});
   final String field;
   final String? detailMessage;
-
-  const ValidationFailure({required this.field, this.detailMessage});
 
   @override
   String get message => detailMessage ?? 'Invalid input for $field.';
@@ -73,4 +70,4 @@ class ValidationFailure extends Failure {
   List<Object?> get props => [field, detailMessage];
 }
 
-// Add other specific failure types as needed (e.g., AuthenticationFailure, PermissionFailure)
+// Add other specific failure types as needed

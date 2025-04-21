@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -52,6 +54,7 @@ unlinked_spec.ds
 **/android/app/debug
 **/android/app/profile
 **/android/app/release
+**/android/app/.cxx
 *.jks
 
 # iOS/XCode related
@@ -90,7 +93,6 @@ coverage/
 packages/**/pubspec.lock
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols

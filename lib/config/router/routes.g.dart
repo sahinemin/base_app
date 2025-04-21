@@ -53,6 +53,24 @@ RouteBase get $customShellRoute => StatefulShellRouteData.$route(
         ),
       ],
     ),
+    StatefulShellBranchData.$branch(
+      routes: [
+        GoRouteData.$route(
+          path: '/todo',
+          name: 'todo',
+
+          factory: $TodoRouteExtension._fromState,
+          routes: [
+            GoRouteData.$route(
+              path: ':todoId',
+              name: 'todoDetail',
+
+              factory: $TodoDetailRouteExtension._fromState,
+            ),
+          ],
+        ),
+      ],
+    ),
   ],
 );
 
@@ -79,6 +97,38 @@ extension $SettingsRouteExtension on SettingsRoute {
   static SettingsRoute _fromState(GoRouterState state) => const SettingsRoute();
 
   String get location => GoRouteData.$location('/settings');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $TodoRouteExtension on TodoRoute {
+  static TodoRoute _fromState(GoRouterState state) => const TodoRoute();
+
+  String get location => GoRouteData.$location('/todo');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $TodoDetailRouteExtension on TodoDetailRoute {
+  static TodoDetailRoute _fromState(GoRouterState state) =>
+      TodoDetailRoute(todoId: int.parse(state.pathParameters['todoId']!));
+
+  String get location =>
+      GoRouteData.$location('/todo/${Uri.encodeComponent(todoId.toString())}');
 
   void go(BuildContext context) => context.go(location);
 

@@ -20,4 +20,10 @@ final class RouteDefinitions {
 
   static const _settingsPath = '/settings';
   static const _settingsName = 'settings';
+
+  static const _todoPath = '/todo';
+  static const _todoName = 'todo';
+
+  static const _todoDetailPath = ':todoId';
+  static const _todoDetailName = 'todoDetail';
 }

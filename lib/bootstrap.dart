@@ -14,7 +14,7 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  configureDependencies();
+  await configureDependencies();
 
   // observes the bloc's states and events
   Bloc.observer = getIt<BlocObserver>();

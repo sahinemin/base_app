@@ -35,7 +35,6 @@ class ConsoleErrorLoggingService implements ErrorLoggingService {
       }
       print('*******************');
     }
-    // In a real implementation, you would send this data to your logging service.
   }
 
   @override
@@ -51,6 +50,5 @@ class ConsoleErrorLoggingService implements ErrorLoggingService {
       }
       print('---------------------');
     }
-    // Optionally send non-fatal messages to your logging service.
   }
 }

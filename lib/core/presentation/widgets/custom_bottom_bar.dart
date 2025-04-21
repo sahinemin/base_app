@@ -14,7 +14,7 @@ final class CustomBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 72,
+      height: 102,
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: Colors.grey)),
       ),
@@ -27,7 +27,6 @@ final class CustomBottomBar extends StatelessWidget {
         child: BottomNavigationBar(
           elevation: 0,
           type: BottomNavigationBarType.fixed,
-
           selectedItemColor: Colors.blue,
           unselectedItemColor: Colors.black87,
           currentIndex: currentIndex,
@@ -46,6 +45,13 @@ final class CustomBottomBar extends StatelessWidget {
                 child: Icon(Icons.settings_outlined),
               ),
               label: 'Settings',
+            ),
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: _iconPadding,
+                child: Icon(Icons.list_outlined),
+              ),
+              label: 'Todo',
             ),
           ],
         ),
